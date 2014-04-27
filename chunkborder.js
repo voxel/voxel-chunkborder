@@ -72,6 +72,8 @@ BorderPlugin.prototype.render = function() {
   if (this.showBorders) {
     var gl = this.shell.gl;
 
+    //gl.disable(gl.DEPTH_TEST); // TODO: ? if disable, too noisy, see through everything. maybe show differently?
+
     this.borderShader.bind();
     this.borderShader.attributes.position.location = 0;
     this.borderShader.uniforms.projection = this.shaderPlugin.projectionMatrix;
