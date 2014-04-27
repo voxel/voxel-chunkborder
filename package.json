@@ -12,7 +12,8 @@
   ],
   "dependencies": {
     "gl-buffer": "^2.0.6",
-    "gl-vao": "^1.1.2"
+    "gl-vao": "^1.1.2",
+    "gl-shader": "^3.0.0"
   },
   "license": "MIT"
 }
