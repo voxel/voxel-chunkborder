@@ -21,10 +21,13 @@ function BorderPlugin(game, opts) {
   this.shaderPlugin = game.plugins.get('voxel-shader');
   if (!this.shaderPlugin) throw new Error('voxel-chunkborder requires voxel-shader');
 
+  this.showBorders = false; // always show borders; overrides keybinding
+
   this.enable();
 }
 
 BorderPlugin.prototype.enable = function() {
+  this.shell.bind('chunkborder', 'F9');
   this.shell.on('gl-init', this.onInit = this.shaderInit.bind(this));
   this.shell.on('gl-render', this.onRender = this.render.bind(this));
   this.mesherPlugin.on('meshed', this.onMeshed = this.createBorderMesh.bind(this));
@@ -34,6 +37,7 @@ BorderPlugin.prototype.disable = function() {
   this.mesherPlugin.removeListener('meshed', this.onMeshed);
   this.shell.removeListener('gl-render', this.onRender);
   this.shell.removeListener('gl-init', this.onInit);
+  this.shell.unbind('chunkborder');
 };
 
 BorderPlugin.prototype.shaderInit = function() {
@@ -54,20 +58,22 @@ void main() {\
 };
 
 BorderPlugin.prototype.render = function() {
-  var gl = this.shell.gl;
+  if (this.showBorders || this.shell.wasDown('chunkborder')) {
+    var gl = this.shell.gl;
 
-  this.borderShader.bind();
-  this.borderShader.attributes.position.location = 0;
-  this.borderShader.uniforms.projection = this.shaderPlugin.projectionMatrix;
-  this.borderShader.uniforms.view = this.shaderPlugin.viewMatrix;
+    this.borderShader.bind();
+    this.borderShader.attributes.position.location = 0;
+    this.borderShader.uniforms.projection = this.shaderPlugin.projectionMatrix;
+    this.borderShader.uniforms.view = this.shaderPlugin.viewMatrix;
 
-  for (var chunkIndex in this.game.voxels.meshes) {
-    var mesh = this.game.voxels.meshes[chunkIndex];
+    for (var chunkIndex in this.game.voxels.meshes) {
+      var mesh = this.game.voxels.meshes[chunkIndex];
 
-    this.borderShader.uniforms.model = mesh.modelMatrix;
-    mesh.borderVAO.bind();
-    mesh.borderVAO.draw(gl.LINES, mesh.borderVertexCount);
-    mesh.borderVAO.unbind();
+      this.borderShader.uniforms.model = mesh.modelMatrix;
+      mesh.borderVAO.bind();
+      mesh.borderVAO.draw(gl.LINES, mesh.borderVertexCount);
+      mesh.borderVAO.unbind();
+    }
   }
 };
 
