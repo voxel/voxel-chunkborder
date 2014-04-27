@@ -2,6 +2,7 @@
   "name": "voxel-chunkborder",
   "description": "",
   "version": "0.0.1",
+  "main": "chunkborder.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:deathcap/voxel-chunkborder.git"
@@ -10,6 +11,8 @@
     "voxel"
   ],
   "dependencies": {
+    "gl-buffer": "^2.0.6",
+    "gl-vao": "^1.1.2"
   },
   "license": "MIT"
 }
