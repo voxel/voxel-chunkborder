@@ -77,28 +77,28 @@ BorderPlugin.prototype.render = function() {
 // https://github.com/hughsk/indexed-geometry-demo
 // https://github.com/deathcap/avatar
 BorderPlugin.prototype.createBorderMesh = function(mesh, gl, _vert_data, voxels) {
-  var s = voxels.shape;
+  var x = voxels.shape[0] - 2;
+  var y = voxels.shape[1] - 2;
+  var z = voxels.shape[2] - 2;
 
-  console.log('border',voxels.shape.join(','));
+  var borderVertexArray = new Uint8Array([
+    0,0,0,
+    0,0,z,
+    0,y,0,
+    0,y,z,
+    x,0,0,
+    x,0,z,
+    x,y,0,
+    x,y,z
+  ]);
 
-  var borderVertexArray = [
-       0,   0,   0,
-       0,   0,s[2],
-       0,s[1],   0,
-       0,s[1],s[2],
-    s[0],   0,   0,
-    s[0],   0,s[2],
-    s[0],s[1],   0,
-    s[0],s[1],s[2]
-  ];
-
-  var indexArray = [
+  var indexArray = new Uint16Array([
     0,1, 0,2, 2,3, 3,1,
     0,4, 4,5, 5,1,
     5,7, 7,3,
     7,6, 6,2,
     6,4
-  ];
+  ]);
 
   var borderVertexCount = indexArray.length;
 
