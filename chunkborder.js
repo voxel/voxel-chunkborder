@@ -8,7 +8,7 @@ module.exports = function(game, opts) {
   return new BorderPlugin(game, opts);
 };
 module.exports.pluginInfo = {
-  loadAfter: ['voxel-mesher', 'voxel-shader'],
+  loadAfter: ['voxel-mesher', 'voxel-shader', 'voxel-keys'],
   clientOnly: true
 };
 
@@ -21,13 +21,16 @@ function BorderPlugin(game, opts) {
   this.shaderPlugin = game.plugins.get('voxel-shader');
   if (!this.shaderPlugin) throw new Error('voxel-chunkborder requires voxel-shader');
 
-  this.showBorders = false; // always show borders; overrides keybinding
+  this.keysPlugin = game.plugins.get('voxel-keys'); // optional
+
+  this.showBorders = false;
 
   this.enable();
 }
 
 BorderPlugin.prototype.enable = function() {
   this.shell.bind('chunkborder', 'F9');
+  if (this.keysPlugin) this.keysPlugin.down.on('chunkborder', this.onToggle = this.toggle.bind(this));
   this.shell.on('gl-init', this.onInit = this.shaderInit.bind(this));
   this.shell.on('gl-render', this.onRender = this.render.bind(this));
   this.mesherPlugin.on('meshed', this.onMeshed = this.createBorderMesh.bind(this));
@@ -38,6 +41,11 @@ BorderPlugin.prototype.disable = function() {
   this.shell.removeListener('gl-render', this.onRender);
   this.shell.removeListener('gl-init', this.onInit);
   this.shell.unbind('chunkborder');
+  if (this.keysPlugin) this.keysPlugin.down.removeListener('chunkborder', this.onToggle);
+};
+
+BorderPlugin.prototype.toggle = function() {
+  this.showBorders = !this.showBorders;
 };
 
 BorderPlugin.prototype.shaderInit = function() {
@@ -58,7 +66,7 @@ void main() {\
 };
 
 BorderPlugin.prototype.render = function() {
-  if (this.showBorders || this.shell.wasDown('chunkborder')) {
+  if (this.showBorders) {
     var gl = this.shell.gl;
 
     this.borderShader.bind();
