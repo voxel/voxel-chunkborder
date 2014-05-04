@@ -1,7 +1,7 @@
 {
   "name": "voxel-chunkborder",
   "description": "show borders around chunks (voxel.js plugin)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "chunkborder.js",
   "repository": {
     "type": "git",
