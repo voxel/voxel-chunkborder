@@ -84,9 +84,10 @@ BorderPlugin.prototype.render = function() {
       var mesh = this.game.voxels.meshes[chunkIndex];
 
       this.borderShader.uniforms.model = mesh.modelMatrix;
-      mesh.borderVAO.bind();
-      mesh.borderVAO.draw(gl.LINES, mesh.borderVertexCount);
-      mesh.borderVAO.unbind();
+      var borderVAO = mesh.vertexArrayObjects.chunkborder;
+      borderVAO.bind();
+      borderVAO.draw(gl.LINES, borderVAO.length);
+      borderVAO.unbind();
     }
   }
 };
@@ -130,7 +131,7 @@ BorderPlugin.prototype.createBorderMesh = function(mesh, gl, _vert_data, voxels)
         type: gl.UNSIGNED_BYTE,
         size: 3
       }], indexBuf);
+  borderVAO.length = borderVertexCount
 
-  mesh.borderVertexCount = borderVertexCount
-  mesh.borderVAO = borderVAO;
+  mesh.vertexArrayObjects.chunkborder = borderVAO
 };
