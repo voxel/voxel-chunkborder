@@ -3,8 +3,6 @@
 var createBuffer = require('gl-buffer');
 var createVAO = require('gl-vao');
 var createShader = require('gl-shader');
-var glm = require('gl-matrix');
-var mat4 = glm.mat4;
 
 module.exports = function(game, opts) {
   return new BorderPlugin(game, opts);
@@ -70,9 +68,6 @@ void main() {\
 }");
 };
 
-var scratch0 = mat4.create();
-var offset = [1,1,1]; // align between chunk borders, subtract off air pad for face rendering (but not AO pad)
-
 BorderPlugin.prototype.render = function() {
   if (this.showBorders) {
     var gl = this.shell.gl;
@@ -88,8 +83,7 @@ BorderPlugin.prototype.render = function() {
     for (var chunkIndex in this.game.voxels.meshes) {
       var mesh = this.game.voxels.meshes[chunkIndex];
 
-      mat4.translate(scratch0, mesh.modelMatrix, offset);
-      this.borderShader.uniforms.model = scratch0;
+      this.borderShader.uniforms.model = mesh.modelMatrix;
       var borderVAO = mesh.vertexArrayObjects.chunkborder;
       borderVAO.bind();
       borderVAO.draw(gl.LINES, borderVAO.length);
