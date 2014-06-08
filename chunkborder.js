@@ -45,7 +45,8 @@ BorderPlugin.prototype.disable = function() {
   if (this.keysPlugin) this.keysPlugin.down.removeListener('chunkborder', this.onToggle);
 };
 
-BorderPlugin.prototype.toggle = function() {
+BorderPlugin.prototype.toggle = function(ev) {
+  if (ev && ev.shiftKey) return; // skip since voxel-wireframe wants Shift+F9
   this.showBorders = !this.showBorders;
 };
 
