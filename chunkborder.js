@@ -2,7 +2,7 @@
 
 var createBuffer = require('gl-buffer');
 var createVAO = require('gl-vao');
-var createShader = require('gl-shader');
+var glslify = require('glslify');
 
 module.exports = function(game, opts) {
   return new BorderPlugin(game, opts);
@@ -51,8 +51,8 @@ BorderPlugin.prototype.toggle = function(ev) {
 };
 
 BorderPlugin.prototype.shaderInit = function() {
-  this.borderShader = createShader(this.shell.gl,
-"/* voxel-chunkborder vertex shader */\
+  this.borderShader = glslify({inline:true,
+vertex:"/* voxel-chunkborder vertex shader */\
 attribute vec3 position;\
 uniform mat4 projection;\
 uniform mat4 view;\
@@ -61,12 +61,12 @@ void main() {\
   gl_Position = projection * view * model * vec4(position, 1.0);\
 }",
 
-"/* voxel-chunkborder fragment shader */\
+fragment: "/* voxel-chunkborder fragment shader */\
 precision lowp float;\
 uniform vec4 color;\
 void main() {\
   gl_FragColor = color;\
-}");
+}"})(this.shell.gl);
 };
 
 BorderPlugin.prototype.render = function() {
