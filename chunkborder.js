@@ -2,7 +2,7 @@
 
 var createBuffer = require('gl-buffer');
 var createVAO = require('gl-vao');
-var glslify = require('glslify');
+var createSimpleShader = require('simple-3d-shader');
 
 module.exports = function(game, opts) {
   return new BorderPlugin(game, opts);
@@ -24,7 +24,7 @@ function BorderPlugin(game, opts) {
   this.keysPlugin = game.plugins.get('voxel-keys'); // optional
 
   this.showBorders = opts.showBorder !== undefined ? opts.showBorders : false; // also changed at runtime
-  this.colorVector = opts.color !== undefined ? opts.color : [0,0,1,1]; // blue, RGBA TODO: convert from hex?
+  this.colorVector = opts.color !== undefined ? opts.color : [0,0,1]; // blue, RGB TODO: convert from hex?
 
   this.enable();
 }
@@ -51,22 +51,7 @@ BorderPlugin.prototype.toggle = function(ev) {
 };
 
 BorderPlugin.prototype.shaderInit = function() {
-  this.borderShader = glslify({inline:true,
-vertex:"/* voxel-chunkborder vertex shader */\
-attribute vec3 position;\
-uniform mat4 projection;\
-uniform mat4 view;\
-uniform mat4 model;\
-void main() {\
-  gl_Position = projection * view * model * vec4(position, 1.0);\
-}",
-
-fragment: "/* voxel-chunkborder fragment shader */\
-precision lowp float;\
-uniform vec4 color;\
-void main() {\
-  gl_FragColor = color;\
-}"})(this.shell.gl);
+  this.borderShader = createSimpleShader(this.shell.gl);
 };
 
 BorderPlugin.prototype.render = function() {
@@ -79,7 +64,7 @@ BorderPlugin.prototype.render = function() {
     this.borderShader.attributes.position.location = 0;
     this.borderShader.uniforms.projection = this.shaderPlugin.projectionMatrix;
     this.borderShader.uniforms.view = this.shaderPlugin.viewMatrix;
-    this.borderShader.uniforms.color = this.colorVector;
+    this.borderShader.attributes.color = this.colorVector;
 
     for (var chunkIndex in this.game.voxels.meshes) {
       var mesh = this.game.voxels.meshes[chunkIndex];
